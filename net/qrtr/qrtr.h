@@ -8,6 +8,11 @@ struct sk_buff;
 
 /* endpoint node id auto assignment */
 #define QRTR_EP_NID_AUTO (-1)
+#define QRTR_EP_NET_ID_AUTO (1)
+
+#define QRTR_DEL_PROC_MAGIC	0xe111
+
+#define MAX_NON_WAKE_SVC_LEN    5
 
 /**
  * struct qrtr_endpoint - endpoint handle
@@ -21,9 +26,25 @@ struct qrtr_endpoint {
 	int (*xmit)(struct qrtr_endpoint *ep, struct sk_buff *skb);
 	/* private: not for endpoint use */
 	struct qrtr_node *node;
+	#ifdef CONFIG_OPLUS_POWERINFO_STANDBY_DEBUG
+	struct device *dev;
+	#endif
 };
 
-int qrtr_endpoint_register(struct qrtr_endpoint *ep, unsigned int nid);
+/**
+ * struct qrtr_array - array with size
+ * @arr: elements in the array
+ * @size: number of elements
+ *
+ * An array with its size provided.
+ */
+struct qrtr_array {
+	u32 *arr;
+	size_t size;
+};
+
+int qrtr_endpoint_register(struct qrtr_endpoint *ep, unsigned int net_id,
+			   bool rt, struct qrtr_array *no_wake);
 
 void qrtr_endpoint_unregister(struct qrtr_endpoint *ep);
 
@@ -33,4 +54,9 @@ int qrtr_ns_init(void);
 
 void qrtr_ns_remove(void);
 
+int qrtr_peek_pkt_size(const void *data);
+
+int qrtr_get_service_id(unsigned int node_id, unsigned int port_id);
+
+void qrtr_print_wakeup_reason(const void *data);
 #endif

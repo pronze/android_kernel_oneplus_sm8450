@@ -34,6 +34,7 @@ obj-$(CONFIG_SENSORS_TSL2550)	+= tsl2550.o
 obj-$(CONFIG_DS1682)		+= ds1682.o
 obj-$(CONFIG_C2PORT)		+= c2port/
 obj-$(CONFIG_HMC6352)		+= hmc6352.o
+obj-$(CONFIG_RTIMD_I2C)		+= rtimd-i2c/
 obj-y				+= eeprom/
 obj-y				+= cb710/
 obj-$(CONFIG_VMWARE_BALLOON)	+= vmw_balloon.o
@@ -48,9 +49,11 @@ obj-$(CONFIG_SRAM)		+= sram.o
 obj-$(CONFIG_SRAM_EXEC)		+= sram-exec.o
 obj-$(CONFIG_GENWQE)		+= genwqe/
 obj-$(CONFIG_ECHO)		+= echo/
+obj-$(CONFIG_HDCP_QSEECOM)	+= hdcp_qseecom.o
 obj-$(CONFIG_CXL_BASE)		+= cxl/
 obj-$(CONFIG_PCI_ENDPOINT_TEST)	+= pci_endpoint_test.o
 obj-$(CONFIG_OCXL)		+= ocxl/
+obj-$(CONFIG_ISL97900_LED)	+= isl97900_led/
 obj-y				+= cardreader/
 obj-$(CONFIG_PVPANIC)   	+= pvpanic.o
 obj-$(CONFIG_HABANA_AI)		+= habanalabs/
@@ -58,3 +61,32 @@ obj-$(CONFIG_UACCE)		+= uacce/
 obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
 obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
 obj-$(CONFIG_UID_SYS_STATS)	+= uid_sys_stats.o
+obj-$(CONFIG_QSEECOM)		+= qseecom-mod.o
+qseecom-mod-$(CONFIG_QSEECOM)  := qseecom.o
+qseecom-mod-$(CONFIG_COMPAT)	+= compat_qseecom.o
+obj-$(CONFIG_WIGIG_SENSING_SPI)	+= wigig_sensing.o
+obj-y	+= tri_state_key/
+obj-$(CONFIG_CSA37F71_SENSOR_NDT)	+= cs_press/
+
+#ifdef OPLUS_FEATURE_RF_CABLE_DETECT
+oplus_bsp_rfcablemonitor-y           := oplus_rf_cable_monitor.o
+obj-$(CONFIG_OPLUS_RF_CABLE_MONITOR)   += oplus_bsp_rfcablemonitor.o
+#endif /* OPLUS_FEATURE_RF_CABLE_DETECT */
+
+#ifdef OPLUS_FEATURE_SIM_DETECT
+obj-$(CONFIG_SIM_DETECT)	+= sim_detect.o
+#endif
+
+#ifdef OPLUS_FEATURE_SIM_DETECT
+obj-$(CONFIG_OEM_QMI)	+= oem_qmi_client.o
+#endif
+
+obj-$(CONFIG_OPLUS_GPIO) += oplus_gpio.o
+
+#ifdef OPLUS_FEATURE_CHG_BASIC
+obj-$(CONFIG_AW8697_HAPTIC) += aw8697_haptic/
+#endif
+obj-$(CONFIG_KINECTICS_XR_NORDIC) += kxrctrl/
+#ifdef OPLUS_POWER_PROCS_LOAD
+obj-$(CONFIG_OPLUS_POWER_PROCS_LOAD) += oplus_procs_load/
+#endif /* OPLUS_POWER_PROCS_LOAD */
