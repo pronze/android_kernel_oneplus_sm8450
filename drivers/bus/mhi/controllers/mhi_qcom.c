@@ -273,7 +273,6 @@ static const struct mhi_pci_dev_info mhi_qcom_sdx65_info = {
 	.allow_m1 = false,
 	.skip_forced_suspend = true,
 	.sfr_support = true,
-	.timesync = true,
 	.drv_support = false,
 };
 
@@ -288,7 +287,6 @@ static const struct mhi_pci_dev_info mhi_qcom_debug_info = {
 	.allow_m1 = true,
 	.skip_forced_suspend = true,
 	.sfr_support = false,
-	.timesync = false,
 	.drv_support = false,
 };
 
@@ -301,7 +299,6 @@ static const struct mhi_pci_dev_info mhi_qcom_sxr_info = {
 	.allow_m1 = true,
 	.skip_forced_suspend = true,
 	.sfr_support = false,
-	.timesync = false,
 	.drv_support = false,
 };
 static const struct pci_device_id mhi_pcie_device_id[] = {
@@ -1002,14 +999,12 @@ static int mhi_qcom_register_controller(struct mhi_controller *mhi_cntrl,
 			goto error_register;
 	}
 
-	if (dev_info->timesync) {
-		ret = mhi_controller_setup_timesync(mhi_cntrl,
-						    &mhi_qcom_time_get,
-						    &mhi_qcom_lpm_disable,
-						    &mhi_qcom_lpm_enable);
-		if (ret)
-			goto error_register;
-	}
+	ret = mhi_controller_setup_timesync(mhi_cntrl,
+			&mhi_qcom_time_get,
+			&mhi_qcom_lpm_disable,
+			&mhi_qcom_lpm_enable);
+	if (ret)
+		goto error_register;
 
 	if (dev_info->drv_support)
 		pci_dev->dev.pm_domain = &mhi_qcom_pm_domain;
