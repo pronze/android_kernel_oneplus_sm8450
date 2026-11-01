@@ -8,6 +8,7 @@
 #include "pelt.h"
 
 #include <trace/hooks/sched.h>
+
 #if IS_ENABLED(CONFIG_OPLUS_SCHED_TUNE)
 #include <../kernel/oplus_cpu/sched/sched_tune/tune.h>
 #endif
@@ -1440,7 +1441,6 @@ static void dequeue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 #if IS_ENABLED(CONFIG_OPLUS_SCHED_TUNE)
 	schedtune_dequeue_task(p, cpu_of(rq));
 #endif
-
 	update_curr_rt(rq);
 	dequeue_rt_entity(rt_se, flags);
 

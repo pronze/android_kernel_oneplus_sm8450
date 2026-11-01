@@ -5740,7 +5740,6 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
 	 * estimated utilization, before we update schedutil.
 	 */
 	util_est_enqueue(&rq->cfs, p);
-
 #if IS_ENABLED(CONFIG_OPLUS_SCHED_TUNE)
 	schedtune_enqueue_task(p, cpu_of(rq));
 #endif

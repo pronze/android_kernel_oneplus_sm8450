@@ -1563,8 +1563,7 @@ unsigned long do_mmap(struct file *file, unsigned long addr,
 		 * never written it. ignore WRITE and make jar eligible for hugepages.
 		 * Note: Ideally, we should fix it in Android.
 		 */
-		if (inode->may_cont_pte == JAR_HUGE &&
-		    CONFIG_CONT_PTE_FILE_HUGEPAGE_DISABLE != 1)
+		if (inode->may_cont_pte == JAR_HUGE)
 			vm_flags &= ~VM_WRITE;
 #endif
 
@@ -2257,7 +2256,20 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
 	if (flags & MAP_FIXED)
 		return addr;
 
+#ifndef CONFIG_CONT_PTE_HUGEPAGE
 	if (addr) {
+#else
+	/*
+	 * xxx
+	 * Android BOOTIMAGE will advise an address lower than 4GB
+	 * in art, we have adjusted the address to make boot-frame
+	 * work.oat aligned with 64KB, but boot-framework is not
+	 * the first oat, so the start address of bootimages might
+	 * be not aligned, we take art's advise here
+	 */
+	if (addr && (IS_ALIGNED(addr, CONT_PTE_SIZE) ||
+		     addr < 0x100000000ULL)) {
+#endif
 		addr = PAGE_ALIGN(addr);
 		vma = find_vma_prev(mm, addr, &prev);
 		if (mmap_end - len >= addr && addr >= mmap_min_addr &&
@@ -2303,7 +2315,12 @@ arch_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
 		return addr;
 
 	/* requesting a specific address, and also read xxx*/
+#ifndef CONFIG_CONT_PTE_HUGEPAGE
 	if (addr) {
+#else
+	if (addr && (IS_ALIGNED(addr, CONT_PTE_SIZE) ||
+		     addr < 0x100000000ULL)) {
+#endif
 		addr = PAGE_ALIGN(addr);
 		vma = find_vma_prev(mm, addr, &prev);
 		if (mmap_end - len >= addr && addr >= mmap_min_addr &&

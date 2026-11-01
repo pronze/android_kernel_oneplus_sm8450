@@ -91,7 +91,6 @@ const_debug unsigned int sysctl_sched_nr_migrate = 32;
 unsigned int sysctl_sched_rt_period = 1000000;
 
 __read_mostly int scheduler_running;
-unsigned long stop_fair_group = 0;
 
 /*
  * part of the period that we allow rt tasks to run in us.
@@ -99,6 +98,7 @@ unsigned long stop_fair_group = 0;
  */
 int sysctl_sched_rt_runtime = 950000;
 
+unsigned long stop_fair_group = 0;
 
 /*
  * Serialization rules:
@@ -7964,6 +7964,7 @@ void sched_move_task(struct task_struct *tsk)
 #if IS_ENABLED(CONFIG_OPLUS_SCHED_TUNE)
 	schedtune_attach(tsk);
 #endif
+
 	rq = task_rq_lock(tsk, &rf);
 	update_rq_clock(rq);
 
@@ -8337,6 +8338,9 @@ static u64 cpu_shares_read_u64(struct cgroup_subsys_state *css,
 {
 	struct task_group *tg = css_tg(css);
 
+	/*
+	 * We can't change the weight of the root cgroup.
+	 */
 	if (!tg->se[0])
 	{
 		return (u64)stop_fair_group;

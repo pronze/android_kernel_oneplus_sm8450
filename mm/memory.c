@@ -5403,7 +5403,6 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
 		return VM_FAULT_SIGBUS;
 
 #ifndef CONFIG_CONT_PTE_HUGEPAGE
-	/* FIXME temporarily remove for cont_pte*/
 	/* Do not check unstable pmd, if it's changed will retry later */
 	if (vmf->flags & FAULT_FLAG_SPECULATIVE)
 		goto skip_pmd_checks;

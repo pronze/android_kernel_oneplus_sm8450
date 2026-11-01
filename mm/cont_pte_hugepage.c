@@ -2611,8 +2611,8 @@ vm_fault_t cont_pte_filemap_around(struct vm_fault *vmf, pgoff_t start_pgoff, pg
 	unsigned long around_cont = 0;
 
 	hoff = ALIGN_DOWN(vmf->pgoff, HPAGE_CONT_PTE_NR);
-	last_pgoff = hoff;
 	pgoff = hoff;
+	last_pgoff = hoff;
 
 	/*
 	 * we are unable to map hugepage, but someone else might have read hugepage or
@@ -3254,7 +3254,7 @@ static void uid_blacklist_update(size_t uid)
 unlock:
 	spin_unlock(&uid_blacklist_lock);
 	if (update)
-		chp_logi("update uid_t:%lu\n", uid);
+		chp_logi("update uid_t:%d\n", uid);
 }
 
 void chp_uid_blacklist_update(void)

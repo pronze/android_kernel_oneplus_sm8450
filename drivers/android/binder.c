@@ -1211,11 +1211,10 @@ static struct binder_ref *binder_get_ref_for_node_olocked(
 	rb_insert_color(&new_ref->rb_node_node, &proc->refs_by_node);
 
 	new_ref->data.desc = (node == context->binder_context_mgr_node) ? 0 : 1;
-
 	trace_android_vh_binder_find_desc(proc, &new_ref->data.desc,
 		&new_ref->rb_node_desc, &create_desc);
 
-	if (!create_desc)
+	if(!create_desc)
 		goto skip_create_desc;
 
 	for (n = rb_first(&proc->refs_by_desc); n != NULL; n = rb_next(n)) {
@@ -4009,8 +4008,8 @@ binder_free_buf(struct binder_proc *proc,
 	bool enqueue_task = true;
 	bool has_transaction = false;
 
-	trace_android_vh_binder_free_buf(proc, thread, buffer);
 
+	trace_android_vh_binder_free_buf(proc, thread, buffer);
 	binder_inner_proc_lock(proc);
 	if (buffer->transaction) {
 		buffer->transaction->buffer = NULL;

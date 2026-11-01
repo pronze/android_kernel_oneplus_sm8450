@@ -3236,19 +3236,10 @@ vm_fault_t filemap_map_pages(struct vm_fault *vmf,
 	XA_STATE(xas, &mapping->i_pages, start_pgoff);
 	struct page *head, *page;
 	unsigned int mmap_miss = READ_ONCE(file->f_ra.mmap_miss);
-#ifdef CONFIG_F2FS_APPBOOST
-	char *pathbuf = NULL;
-#endif
 	vm_fault_t ret = (vmf->flags & FAULT_FLAG_SPECULATIVE) ?
 		VM_FAULT_RETRY : 0;
+	pgoff_t first_pgoff = 0;
 
-		pgoff_t first_pgoff = 0;
-
-#ifdef CONFIG_F2FS_APPBOOST
-        if (trace_filemap_map_pages_enabled()){
-                pathbuf = kmalloc(PATH_MAX, GFP_KERNEL);
-        }
-#endif
 	rcu_read_lock();
 	head = first_map_page(mapping, &xas, end_pgoff);
 	if (!head)
@@ -3296,30 +3287,15 @@ vm_fault_t filemap_map_pages(struct vm_fault *vmf,
 		do_set_pte(vmf, page, addr);
 		/* no need to invalidate: a not-present page won't be cached */
 		update_mmu_cache(vma, addr, vmf->pte);
-#ifdef CONFIG_F2FS_APPBOOST
-		if (trace_filemap_map_pages_enabled() && pathbuf) {
-			if (mapping->host && mapping->host->i_sb
-				&& mapping->host->i_sb->s_magic == F2FS_SUPER_MAGIC) {
-				char *path = d_path(&file->f_path, pathbuf, PATH_MAX);
-				if (!IS_ERR(path))
-					trace_filemap_map_pages(mapping->host, head, path);
-			}
-		}
-#endif
 		unlock_page(head);
 		continue;
 unlock:
 		unlock_page(head);
 		put_page(head);
 	} while ((head = next_map_page(mapping, &xas, end_pgoff)) != NULL);
-
 	pte_unmap_unlock(vmf->pte, vmf->ptl);
 out:
 	rcu_read_unlock();
-#ifdef CONFIG_F2FS_APPBOOST
-        if (pathbuf)
-                kfree(pathbuf);
-#endif
 	WRITE_ONCE(file->f_ra.mmap_miss, mmap_miss);
 	trace_android_vh_filemap_map_pages(file, first_pgoff, last_pgoff, ret);
 	return ret;

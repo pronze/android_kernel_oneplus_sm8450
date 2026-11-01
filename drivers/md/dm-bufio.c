@@ -1720,7 +1720,6 @@ static unsigned long dm_bufio_shrink_scan(struct shrinker *shrink, struct shrink
 		return 0;
 #endif
 
-
 	c = container_of(shrink, struct dm_bufio_client, shrinker);
 	atomic_long_add(sc->nr_to_scan, &c->need_shrink);
 	queue_work(dm_bufio_wq, &c->shrink_work);

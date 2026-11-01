@@ -1609,6 +1609,9 @@ keep_locked:
 		 * trylock-bit and return if page tyrlock failed in
 		 * reclaim-process. Here we just want to clear trylock-bit
 		 * so that ignore page_trylock_result.
+		 * TODO: trace_android_vh_page_trylock_get_result should be
+		 * changed to a different hook which correctly reflects the
+		 * usage here, which is to clear the try-lock bit.
 		 */
 		trace_android_vh_page_trylock_get_result(page, &page_trylock_result);
 		unlock_page(page);
@@ -2745,8 +2748,8 @@ static void shrink_lruvec(struct lruvec *lruvec, struct scan_control *sc)
 	enum lru_list lru;
 	unsigned long nr_reclaimed = 0;
 	unsigned long nr_to_reclaim = sc->nr_to_reclaim;
+	bool proportional_reclaim;
 	struct blk_plug plug;
-	bool scan_adjusted;
 
 
 #if defined(CONFIG_CONT_PTE_HUGEPAGE) && CONFIG_POOL_ASYNC_RECLAIM
@@ -4081,7 +4084,7 @@ static bool prepare_kswapd_sleep(pg_data_t *pgdat, int order,
 		if (waitqueue_active(&pool_direct_reclaim_wait[pgdat->node_id])) {
 			struct huge_page_pool *pool = cont_pte_pool();
 
-			pr_debug_ratelimited("@%s:%d -> wake_up pool_direct_reclaim_wait count:%d wmark_min=%lu @\n",
+			pr_debug_ratelimited("@%s:%d -> wake_up pool_direct_reclaim_wait count:%d wmark_min=%d @\n",
 					__func__, __LINE__, huge_page_pool_count(pool, HPAGE_POOL_CMA), pool->wmark[POOL_WMARK_MIN]);
 			wake_up_all(&pool_direct_reclaim_wait[pgdat->node_id]);
 		}

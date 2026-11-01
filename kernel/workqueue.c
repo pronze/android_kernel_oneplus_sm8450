@@ -5534,7 +5534,7 @@ static ssize_t wq_nice_show(struct device *dev, struct device_attribute *attr,
 #ifdef CONFIG_BLOCKIO_UX_OPT
 	written = scnprintf(buf, PAGE_SIZE, "%d\n",
 			wq->unbound_attrs->nice == VIRTUAL_KWORKER_NICE ?
-			MIN_NICE : wq->unbound_attrs->nice);
+				MIN_NICE : wq->unbound_attrs->nice);
 #else
 	written = scnprintf(buf, PAGE_SIZE, "%d\n", wq->unbound_attrs->nice);
 #endif
