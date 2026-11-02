@@ -245,7 +245,6 @@ struct qpnp_pon {
 };
 
 static struct qpnp_pon *sys_reset_dev;
-EXPORT_SYMBOL(sys_reset_dev);
 static struct qpnp_pon *modem_reset_dev;
 static DEFINE_SPINLOCK(spon_list_slock);
 static LIST_HEAD(spon_dev_list);

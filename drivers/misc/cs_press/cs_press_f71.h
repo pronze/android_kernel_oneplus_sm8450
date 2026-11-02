@@ -211,8 +211,10 @@
 #define  SCENE_NUM                      10
 #define  PRESS_NUM                      10
 
-#define  NAME_MAX_LENS                  256 
+#define  NAME_MAX_LENS                  256
+#ifndef MIN
 #define MIN(A, B) ((A) < (B) ? (A) : (B))
+#endif
 
 #define DEFAULT_RUN_DELAY_TIME          50
 
