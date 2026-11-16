@@ -53,6 +53,10 @@
 #include "debug.h"
 #include "power.h"
 #include "genl.h"
+#ifdef OPLUS_FEATURE_WIFI_MAC
+#include <soc/oplus/system/boot_mode.h>
+#include <soc/oplus/system/oplus_project.h>
+#endif /* OPLUS_FEATURE_WIFI_MAC */
 
 #define MAX_PROP_SIZE			32
 #define NUM_LOG_PAGES			10
@@ -745,7 +749,11 @@ static int icnss_setup_dms_mac(struct icnss_priv *priv)
 	/* DTSI property use-nv-mac is used to force DMS MAC address for WLAN.
 	 * Thus assert on failure to get MAC from DMS even after retries
 	 */
-	if (priv->use_nv_mac) {
+#ifndef OPLUS_FEATURE_WIFI_MAC
+    if (priv->use_nv_mac) {
+#else
+    if ((get_boot_mode() !=  MSM_BOOT_MODE__WLAN) && priv->use_nv_mac) {
+#endif /* OPLUS_FEATURE_WIFI_MAC */
 		for (i = 0; i < ICNSS_DMS_QMI_CONNECTION_WAIT_RETRY; i++) {
 			if (priv->dms.mac_valid)
 				break;
@@ -4323,6 +4331,12 @@ void icnss_add_fw_prefix_name(struct icnss_priv *priv, char *prefix_name,
 			scnprintf(prefix_name, ICNSS_MAX_FILE_NAME,
 				  "%s/%s", priv->wcn_hw_version, name);
 		} else {
+#ifdef OPLUS_FEATURE_WIFI_BDF
+    		scnprintf(prefix_name, ICNSS_MAX_FILE_NAME, "%s", name);
+#else
+    		scnprintf(prefix_name, ICNSS_MAX_FILE_NAME,
+          		QCA6750_PATH_PREFIX "%s", name);
+#endif /* OPLUS_FEATURE_WIFI_BDF */
 			scnprintf(prefix_name, ICNSS_MAX_FILE_NAME,
 				  QCA6750_PATH_PREFIX "%s", name);
 		}
